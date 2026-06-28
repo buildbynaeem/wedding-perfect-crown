@@ -19,7 +19,8 @@
  */
 
 @theme inline {
-  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-korean: "Noto Serif KR", "Cormorant Garamond", serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -65,13 +66,12 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.985 0.005 90);
-  --foreground: oklch(0.22 0.02 140);
-  --ink: oklch(0.18 0.015 150);
-  --forest: oklch(0.32 0.05 155);
-  --lake: oklch(0.42 0.07 220);
-  --champagne: oklch(0.82 0.06 80);
-  --olive: oklch(0.55 0.06 120);
+  --background: oklch(0.13 0.015 260);
+  --foreground: oklch(0.95 0.01 90);
+  --obsidian: oklch(0.10 0.012 260);
+  --gold: oklch(0.78 0.13 80);
+  --gold-deep: oklch(0.55 0.10 70);
+  --crimson: oklch(0.38 0.16 25);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
@@ -146,20 +146,21 @@
 
   body {
     background-color: var(--background);
-    color: var(--ink);
+    color: var(--foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "ss02";
     -webkit-font-smoothing: antialiased;
   }
   .font-serif { font-family: var(--font-serif); }
+  .font-korean { font-family: var(--font-korean); }
   .font-sans { font-family: var(--font-sans); }
 }
 
-@utility text-ink { color: var(--ink); }
-@utility text-forest { color: var(--forest); }
-@utility text-lake { color: var(--lake); }
-@utility text-champagne { color: var(--champagne); }
-@utility bg-forest { background-color: var(--forest); }
-@utility bg-lake { background-color: var(--lake); }
-@utility bg-champagne { background-color: var(--champagne); }
-@utility bg-cream { background-color: #FAF9F6; }
+@utility text-gold { color: var(--gold); }
+@utility text-gold-deep { color: var(--gold-deep); }
+@utility text-crimson { color: var(--crimson); }
+@utility bg-obsidian { background-color: var(--obsidian); }
+@utility bg-gold { background-color: var(--gold); }
+@utility bg-crimson { background-color: var(--crimson); }
+@utility border-gold { border-color: var(--gold); }
+@utility border-gold-deep { border-color: var(--gold-deep); }

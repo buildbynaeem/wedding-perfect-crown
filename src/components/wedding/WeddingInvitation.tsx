@@ -1,29 +1,33 @@
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ChevronDown, Sparkles, Heart, Wine, Flower2, Sun } from "lucide-react";
-import heroImg from "@/assets/hero-como.jpg";
+import { ChevronDown, Sparkles, Gift } from "lucide-react";
+import heroImg from "@/assets/hero-namjun.jpg";
 
-const WEDDING_DATE = new Date("2026-09-24T16:00:00+02:00");
+const WEDDING_DATE = new Date("2026-10-18T17:00:00+09:00");
 
 function useCountdown(target: Date) {
-  const [now, setNow] = useState(() => Date.now());
+  // Start at 0 on SSR/first paint to avoid hydration mismatch; then tick.
+  const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const diff = Math.max(0, target.getTime() - now);
-  const days = Math.floor(diff / 86400000);
-  const hours = Math.floor((diff % 86400000) / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
-  return { days, hours, minutes, seconds };
+  const diff = now === null ? 0 : Math.max(0, target.getTime() - now);
+  return {
+    ready: now !== null,
+    days: Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000),
+  };
 }
 
 export function WeddingInvitation() {
   return (
-    <main className="bg-cream text-ink overflow-x-hidden">
+    <main className="bg-obsidian text-white overflow-x-hidden">
       <Hero />
-      <Itinerary />
+      <Timeline />
       <DressCode />
       <RSVP />
       <Footer />
@@ -31,68 +35,90 @@ export function WeddingInvitation() {
   );
 }
 
+/* ---------------- HERO ---------------- */
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, -180]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
 
-  const words = ["Hannah", "&", "Garrett"];
+  const letters = "Nam-jun  &  Ji-yeon".split("");
+
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden">
-      <motion.div style={{ y: useTransform(scrollYProgress, [0, 1], [0, 120]) }} className="absolute inset-0">
-        <img src={heroImg} alt="Lake Como villa at golden hour" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
+    <section ref={ref} className="relative h-screen w-full overflow-hidden bg-black">
+      <motion.div style={{ y: bgY }} className="absolute inset-0 scale-110">
+        <img src={heroImg} alt="" className="h-full w-full object-cover opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.85)_85%)]" />
       </motion.div>
 
-      <motion.div style={{ y, opacity }} className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
-        <motion.p
+      {/* Thin gold frame */}
+      <div className="pointer-events-none absolute inset-6 border border-gold-deep/40" />
+
+      <motion.div style={{ y: textY, opacity }} className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="font-sans text-[0.7rem] tracking-[0.5em] uppercase text-white/80"
+          transition={{ duration: 1.4, ease: "easeOut" }}
+          className="flex items-center gap-4 text-gold"
         >
-          Together with their families
-        </motion.p>
+          <span className="h-px w-10 bg-gold/60" />
+          <span className="font-sans text-[0.62rem] tracking-[0.55em] uppercase">Joseon · Seoul · MMXXVI</span>
+          <span className="h-px w-10 bg-gold/60" />
+        </motion.div>
 
-        <h1 className="mt-8 flex flex-wrap items-baseline justify-center gap-x-6 gap-y-2 font-serif text-white">
-          {words.map((w, i) => (
+        <h1 className="mt-10 flex flex-wrap justify-center font-serif text-white">
+          {letters.map((ch, i) => (
             <motion.span
-              key={w}
-              initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+              key={i}
+              initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.4 + i * 0.25 }}
-              className={w === "&" ? "italic text-[2.5rem] md:text-[4rem] text-champagne font-normal" : "text-[3.5rem] md:text-[7rem] leading-none font-medium"}
+              transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1], delay: 0.5 + i * 0.05 }}
+              className={`inline-block leading-none ${
+                ch === "&" ? "text-gold italic mx-2 text-4xl md:text-6xl" : "text-5xl md:text-8xl"
+              } ${ch === " " ? "w-2 md:w-3" : ""}`}
+              style={{ fontWeight: 300 }}
             >
-              {w}
+              {ch === " " ? "\u00A0" : ch}
             </motion.span>
           ))}
         </h1>
 
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.4, delay: 1.8 }}
+          className="mt-10 font-serif italic text-lg md:text-xl text-white/75 tracking-wide"
+        >
+          Two Eras. One Eternity.
+        </motion.p>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.6 }}
-          className="mt-10 flex items-center gap-6 font-sans text-[0.65rem] md:text-xs tracking-[0.45em] uppercase text-white/85"
+          transition={{ duration: 1, delay: 2.2 }}
+          className="mt-12 flex items-center gap-5 font-sans text-[0.6rem] md:text-xs tracking-[0.5em] uppercase text-gold/80"
         >
-          <span>24 · 09 · 2026</span>
-          <span className="h-px w-10 bg-white/50" />
-          <span>Lake Como · Italy</span>
+          <span>18 · 10 · 2026</span>
+          <span className="h-px w-8 bg-gold/40" />
+          <span>The Shilla, Seoul</span>
         </motion.div>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 text-white/80"
+        transition={{ delay: 2.6 }}
+        className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 text-gold/80"
       >
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, 10, 0], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
           className="flex flex-col items-center gap-2"
+          style={{ filter: "drop-shadow(0 0 8px rgba(212,175,90,0.6))" }}
         >
-          <span className="font-sans text-[0.6rem] tracking-[0.4em] uppercase">Scroll to discover</span>
+          <span className="font-sans text-[0.6rem] tracking-[0.45em] uppercase">Scroll to Enter</span>
           <ChevronDown className="h-4 w-4" />
         </motion.div>
       </motion.div>
@@ -100,38 +126,47 @@ function Hero() {
   );
 }
 
-function Itinerary() {
-  const { days, hours, minutes, seconds } = useCountdown(WEDDING_DATE);
+/* ---------------- TIMELINE + COUNTDOWN ---------------- */
+function Timeline() {
+  const { days, hours, minutes, seconds, ready } = useCountdown(WEDDING_DATE);
   const events = [
-    { day: "Friday · Sept 25", title: "Welcome Drinks", time: "7:00 PM", place: "Villa Terrace", icon: Wine },
-    { day: "Saturday · Sept 26", title: "The Ceremony", time: "4:30 PM", place: "Lakeside Gardens", icon: Heart },
-    { day: "Saturday · Sept 26", title: "Dinner & Dancing", time: "8:00 PM", place: "Grand Pavilion", icon: Sparkles },
-    { day: "Sunday · Sept 27", title: "Farewell Brunch", time: "11:00 AM", place: "Boathouse", icon: Sun },
+    { day: "Friday · Oct 16", title: "The Rehearsal", korean: "예행 연습", time: "7:00 PM", place: "Garden Pavilion, The Shilla" },
+    { day: "Saturday · Oct 17", title: "Tea Ceremony", korean: "다례", time: "11:00 AM", place: "Private Salon" },
+    { day: "Sunday · Oct 18", title: "The Grand Ceremony", korean: "본 예식", time: "5:00 PM", place: "The Shilla, Yeong Bin Gwan" },
+    { day: "Sunday · Oct 18", title: "The Afterparty", korean: "애프터파티", time: "10:00 PM", place: "Rooftop, Seoul Skyline" },
   ];
 
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 30%"] });
+  const lineH = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
   return (
-    <section className="relative py-32 px-6 md:px-12">
+    <section className="relative py-32 md:py-40 px-6 md:px-12 bg-obsidian">
       <div className="mx-auto max-w-6xl">
-        <SectionLabel>The Weekend</SectionLabel>
-        <h2 className="mt-4 font-serif text-4xl md:text-6xl text-ink max-w-3xl">
-          Three days on the lake, written for you.
+        <SectionLabel>The Fate Timeline</SectionLabel>
+        <h2 className="mt-6 font-serif text-4xl md:text-6xl text-white max-w-3xl" style={{ fontWeight: 300 }}>
+          A weekend written in <span className="italic text-gold">gold</span>.
         </h2>
 
-        {/* Countdown */}
-        <div className="mt-16 rounded-2xl border border-gray-200 bg-white/40 backdrop-blur-md p-8 md:p-10">
-          <p className="font-sans text-[0.65rem] tracking-[0.4em] uppercase text-ink/60">Counting down</p>
-          <div className="mt-6 grid grid-cols-4 gap-4 md:gap-10">
+        {/* Countdown — neon glow */}
+        <div className="mt-16 rounded-sm border border-gold-deep/30 bg-white/[0.02] backdrop-blur-md p-8 md:p-12 relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,175,90,0.08),transparent_60%)]" />
+          <p className="font-sans text-[0.6rem] tracking-[0.5em] uppercase text-gold/80">Until We Begin</p>
+          <div className="mt-8 grid grid-cols-4 gap-3 md:gap-10 tabular-nums">
             {[
               { v: days, l: "Days" },
               { v: hours, l: "Hours" },
               { v: minutes, l: "Minutes" },
               { v: seconds, l: "Seconds" },
             ].map((u) => (
-              <div key={u.l} className="flex flex-col items-start">
-                <span className="font-serif text-4xl md:text-7xl tabular-nums text-ink leading-none">
-                  {String(u.v).padStart(2, "0")}
+              <div key={u.l} className="flex flex-col">
+                <span
+                  className="font-serif text-5xl md:text-8xl text-white leading-none"
+                  style={{ fontWeight: 300, textShadow: ready ? "0 0 24px rgba(212,175,90,0.35)" : "none" }}
+                >
+                  {ready ? String(u.v).padStart(2, "0") : "00"}
                 </span>
-                <span className="mt-3 font-sans text-[0.6rem] md:text-xs tracking-[0.35em] uppercase text-ink/60">
+                <span className="mt-4 font-sans text-[0.55rem] md:text-[0.65rem] tracking-[0.45em] uppercase text-white/50">
                   {u.l}
                 </span>
               </div>
@@ -139,32 +174,54 @@ function Itinerary() {
           </div>
         </div>
 
-        {/* Events grid */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-          {events.map((e, i) => (
-            <motion.div
-              key={e.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.9, ease: "easeOut", delay: (i % 2) * 0.1 }}
-              className={`flex flex-col ${i % 2 === 1 ? "md:mt-20" : ""}`}
-            >
-              <div className="flex items-center gap-3 text-forest">
-                <e.icon className="h-4 w-4" strokeWidth={1.5} />
-                <span className="font-sans text-[0.65rem] tracking-[0.4em] uppercase">{e.day}</span>
-              </div>
-              <h3 className="mt-4 font-serif text-3xl md:text-4xl text-ink">{e.title}</h3>
-              <div className="mt-4 h-px w-16 bg-ink/20" />
-              <p className="mt-4 font-sans text-sm text-ink/70">{e.time} · {e.place}</p>
-            </motion.div>
-          ))}
+        {/* Vertical timeline */}
+        <div ref={ref} className="relative mt-28 pl-10 md:pl-0">
+          {/* base line */}
+          <div className="absolute left-3 md:left-1/2 top-0 bottom-0 w-px bg-gold-deep/20 md:-translate-x-1/2" />
+          {/* animated fill */}
+          <motion.div
+            style={{ height: lineH }}
+            className="absolute left-3 md:left-1/2 top-0 w-px bg-gradient-to-b from-gold to-gold-deep md:-translate-x-1/2"
+          />
+
+          <div className="space-y-20 md:space-y-32">
+            {events.map((e, i) => (
+              <TimelineRow key={e.title} event={e} index={i} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
+function TimelineRow({ event: e, index }: { event: { day: string; title: string; korean: string; time: string; place: string }; index: number }) {
+  const left = index % 2 === 0;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      className="relative grid grid-cols-1 md:grid-cols-2 md:gap-16 items-center"
+    >
+      {/* node */}
+      <div className="absolute left-3 md:left-1/2 -translate-x-1/2 -translate-y-1/2 top-6 md:top-1/2">
+        <div className="h-3 w-3 rounded-full bg-gold shadow-[0_0_16px_rgba(212,175,90,0.8)]" />
+      </div>
+
+      <div className={`pl-8 md:pl-0 ${left ? "md:text-right md:pr-16" : "md:col-start-2 md:pl-16"}`}>
+        <p className="font-sans text-[0.6rem] tracking-[0.45em] uppercase text-gold/80">{e.day}</p>
+        <h3 className="mt-3 font-serif text-3xl md:text-4xl text-white" style={{ fontWeight: 300 }}>{e.title}</h3>
+        <p className="mt-2 font-korean text-base text-white/40">{e.korean}</p>
+        <div className={`mt-5 h-px w-12 bg-gold-deep/60 ${left ? "md:ml-auto" : ""}`} />
+        <p className="mt-5 font-sans text-sm text-white/60">{e.time} · {e.place}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ---------------- DRESS CODE ---------------- */
 function DressCode() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [revealed, setRevealed] = useState(false);
@@ -181,27 +238,38 @@ function DressCode() {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    // Gradient top layer
+    // Obsidian gradient base
     const grad = ctx.createLinearGradient(0, 0, rect.width, rect.height);
-    grad.addColorStop(0, "#cbb98a");
-    grad.addColorStop(0.5, "#e7dcc1");
-    grad.addColorStop(1, "#9aa78a");
+    grad.addColorStop(0, "#0b0b10");
+    grad.addColorStop(0.5, "#1a1410");
+    grad.addColorStop(1, "#0b0b10");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, rect.width, rect.height);
 
-    // Subtle texture noise
-    for (let i = 0; i < 1500; i++) {
-      ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.05})`;
+    // Subtle noise
+    for (let i = 0; i < 2500; i++) {
+      ctx.fillStyle = `rgba(212,175,90,${Math.random() * 0.06})`;
       ctx.fillRect(Math.random() * rect.width, Math.random() * rect.height, 1, 1);
     }
 
-    ctx.fillStyle = "rgba(40, 40, 35, 0.75)";
-    ctx.font = "italic 500 28px 'Playfair Display', serif";
+    // Gold border inside card
+    ctx.strokeStyle = "rgba(212,175,90,0.4)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(14, 14, rect.width - 28, rect.height - 28);
+
+    // Gold foil typography
+    const goldGrad = ctx.createLinearGradient(0, rect.height / 2 - 20, 0, rect.height / 2 + 20);
+    goldGrad.addColorStop(0, "#f5d97a");
+    goldGrad.addColorStop(0.5, "#d4af5a");
+    goldGrad.addColorStop(1, "#8a6a2a");
+    ctx.fillStyle = goldGrad;
     ctx.textAlign = "center";
-    ctx.fillText("Discover the Dress Code", rect.width / 2, rect.height / 2 - 6);
-    ctx.font = "300 10px 'Inter', sans-serif";
-    ctx.fillStyle = "rgba(40, 40, 35, 0.55)";
-    ctx.fillText("✦  SCRATCH TO REVEAL  ✦", rect.width / 2, rect.height / 2 + 22);
+    ctx.font = "300 italic 30px 'Cormorant Garamond', serif";
+    ctx.fillText("Reveal the Dress Code", rect.width / 2, rect.height / 2 - 8);
+
+    ctx.fillStyle = "rgba(212,175,90,0.55)";
+    ctx.font = "300 9px 'Inter', sans-serif";
+    ctx.fillText("◆  S C R A T C H   T O   R E V E A L  ◆", rect.width / 2, rect.height / 2 + 24);
   }, []);
 
   function scratch(x: number, y: number) {
@@ -211,55 +279,63 @@ function DressCode() {
     if (!ctx) return;
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
-    ctx.arc(x, y, 28, 0, Math.PI * 2);
+    ctx.arc(x, y, 36, 0, Math.PI * 2);
     ctx.fill();
 
-    // Check reveal threshold
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let cleared = 0;
-    for (let i = 3; i < imageData.data.length; i += 40) {
-      if (imageData.data[i] === 0) cleared++;
+    let sampled = 0;
+    for (let i = 3; i < data.data.length; i += 60) {
+      sampled++;
+      if (data.data[i] === 0) cleared++;
     }
-    if (cleared / (imageData.data.length / 40) > 0.5) {
-      setRevealed(true);
-    }
+    if (cleared / sampled > 0.5) setRevealed(true);
   }
 
-  function getPos(e: MouseEvent | TouchEvent | React.TouchEvent) {
+  function pos(e: React.MouseEvent | React.TouchEvent) {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
-    const point = "touches" in e ? e.touches[0] : (e as MouseEvent);
-    return { x: point.clientX - rect.left, y: point.clientY - rect.top };
+    const p = "touches" in e ? e.touches[0] : (e as React.MouseEvent);
+    return { x: p.clientX - rect.left, y: p.clientY - rect.top };
   }
 
   return (
-    <section className="relative py-32 px-6 md:px-12 bg-gradient-to-b from-cream to-[#f0ece2]">
+    <section className="relative py-32 md:py-40 px-6 md:px-12 bg-black">
       <div className="mx-auto max-w-3xl text-center">
         <SectionLabel>Attire</SectionLabel>
-        <h2 className="mt-4 font-serif text-4xl md:text-5xl">A whisper of formality.</h2>
-        <p className="mt-4 font-sans text-sm text-ink/60 max-w-xl mx-auto">
-          Use your finger or cursor to uncover what to wear.
+        <h2 className="mt-6 font-serif text-4xl md:text-5xl text-white" style={{ fontWeight: 300 }}>
+          A code, <span className="italic text-gold">sealed in gold</span>.
+        </h2>
+        <p className="mt-4 font-sans text-sm tracking-wide text-white/50 max-w-md mx-auto">
+          Drag across the card to reveal what to wear.
         </p>
 
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-          className="relative mx-auto mt-12 aspect-[4/3] max-w-xl rounded-lg border border-gray-200 bg-white shadow-[0_30px_80px_-30px_rgba(60,55,40,0.35)]"
-          style={{ transform: "rotate(-1.2deg)" }}
+          transition={{ duration: 1.1, ease: "easeOut" }}
+          className="relative mx-auto mt-14 aspect-[1.6/1] max-w-lg rounded-sm border border-gold-deep/40 bg-[#0a0a0d] shadow-[0_50px_120px_-30px_rgba(212,175,90,0.25)]"
+          style={{ transform: "rotate(-1.5deg)" }}
         >
-          {/* Bottom layer */}
+          {/* VIP card decorative corners */}
+          <span className="absolute top-3 left-3 font-sans text-[0.55rem] tracking-[0.4em] text-gold/60">VIP · 001</span>
+          <span className="absolute top-3 right-3 font-sans text-[0.55rem] tracking-[0.4em] text-gold/60">N · J</span>
+
+          {/* Bottom layer: revealed content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-            <p className="font-sans text-[0.6rem] tracking-[0.45em] uppercase text-ink/50">The Dress Code</p>
-            <h3 className="mt-4 font-serif text-3xl md:text-4xl italic">Black Tie Elegance</h3>
-            <div className="mt-6 h-px w-16 bg-ink/20" />
-            <p className="mt-6 font-sans text-sm text-ink/70 leading-relaxed">
-              A palette of Lake Como blues, olive greens, and warm champagne.
+            <p className="font-sans text-[0.55rem] tracking-[0.5em] uppercase text-gold/70">The Dress Code</p>
+            <h3 className="mt-4 font-serif text-3xl md:text-4xl italic text-white" style={{ fontWeight: 300 }}>
+              Black Tie<span className="text-gold"> · </span>or Hanbok
+            </h3>
+            <p className="mt-2 font-korean text-sm text-white/40">정장 또는 한복</p>
+            <div className="mt-6 h-px w-16 bg-gold-deep/60" />
+            <p className="mt-6 font-sans text-sm text-white/65 leading-relaxed max-w-xs">
+              Palette: Obsidian, Gold, and Deep Crimson.
             </p>
-            <div className="mt-6 flex gap-3">
-              {["#3b556e", "#6b7a4d", "#d9c79a", "#1f2a33"].map((c) => (
-                <span key={c} className="h-6 w-6 rounded-full border border-black/10" style={{ backgroundColor: c }} />
+            <div className="mt-5 flex gap-3">
+              {["#0a0a0a", "#d4af5a", "#6e1a1a", "#1a1a24"].map((c) => (
+                <span key={c} className="h-5 w-5 rounded-full border border-gold-deep/40" style={{ backgroundColor: c }} />
               ))}
             </div>
           </div>
@@ -267,13 +343,13 @@ function DressCode() {
           {/* Scratch canvas */}
           <canvas
             ref={canvasRef}
-            className={`absolute inset-0 h-full w-full rounded-lg cursor-grab touch-none transition-opacity duration-700 ${revealed ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-            onMouseDown={(e) => { drawing.current = true; const p = getPos(e); scratch(p.x, p.y); }}
-            onMouseMove={(e) => { if (!drawing.current) return; const p = getPos(e); scratch(p.x, p.y); }}
+            className={`absolute inset-0 h-full w-full rounded-sm cursor-grab touch-none transition-opacity duration-700 ${revealed ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+            onMouseDown={(e) => { drawing.current = true; const p = pos(e); scratch(p.x, p.y); }}
+            onMouseMove={(e) => { if (!drawing.current) return; const p = pos(e); scratch(p.x, p.y); }}
             onMouseUp={() => (drawing.current = false)}
             onMouseLeave={() => (drawing.current = false)}
-            onTouchStart={(e) => { drawing.current = true; const p = getPos(e); scratch(p.x, p.y); }}
-            onTouchMove={(e) => { if (!drawing.current) return; const p = getPos(e); scratch(p.x, p.y); }}
+            onTouchStart={(e) => { drawing.current = true; const p = pos(e); scratch(p.x, p.y); }}
+            onTouchMove={(e) => { if (!drawing.current) return; const p = pos(e); scratch(p.x, p.y); }}
             onTouchEnd={() => (drawing.current = false)}
           />
         </motion.div>
@@ -282,27 +358,31 @@ function DressCode() {
   );
 }
 
+/* ---------------- RSVP ---------------- */
 function MagneticButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
   const ref = useRef<HTMLButtonElement>(null);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  function handleMove(e: React.MouseEvent<HTMLButtonElement>) {
-    const rect = ref.current!.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setPos({ x: x * 0.25, y: y * 0.25 });
-  }
+  const [p, setP] = useState({ x: 0, y: 0 });
   return (
     <motion.button
       ref={ref}
       onClick={onClick}
-      onMouseMove={handleMove}
-      onMouseLeave={() => setPos({ x: 0, y: 0 })}
-      animate={{ x: pos.x, y: pos.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.4 }}
-      className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-ink px-14 py-6 text-white"
+      onMouseMove={(e) => {
+        const r = ref.current!.getBoundingClientRect();
+        setP({ x: (e.clientX - r.left - r.width / 2) * 0.3, y: (e.clientY - r.top - r.height / 2) * 0.3 });
+      }}
+      onMouseLeave={() => setP({ x: 0, y: 0 })}
+      animate={{ x: p.x, y: p.y }}
+      transition={{ type: "spring", stiffness: 140, damping: 14, mass: 0.4 }}
+      className="group relative inline-flex flex-col items-center justify-center rounded-full border border-gold px-16 py-7 text-white overflow-hidden"
+      style={{ background: "radial-gradient(circle at center, rgba(212,175,90,0.15), transparent 70%)" }}
     >
-      <span className="font-serif italic text-2xl md:text-3xl">RSVP</span>
-      <span className="font-sans text-[0.6rem] tracking-[0.4em] uppercase opacity-70">Respond by July 1</span>
+      <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gold/10" />
+      <span className="relative font-serif italic text-3xl md:text-4xl text-gold" style={{ fontWeight: 300, textShadow: "0 0 24px rgba(212,175,90,0.5)" }}>
+        {children}
+      </span>
+      <span className="relative mt-2 font-sans text-[0.55rem] tracking-[0.5em] uppercase text-white/60">
+        Respond by Sept 1
+      </span>
     </motion.button>
   );
 }
@@ -310,6 +390,7 @@ function MagneticButton({ onClick, children }: { onClick: () => void; children: 
 function RSVP() {
   const [stage, setStage] = useState<"idle" | "form" | "done">("idle");
   const [attending, setAttending] = useState<"yes" | "no" | null>(null);
+  const [gift, setGift] = useState("");
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -317,16 +398,19 @@ function RSVP() {
   }
 
   return (
-    <section className="relative py-40 px-6 md:px-12 bg-forest text-white overflow-hidden">
-      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_20%,rgba(217,199,154,0.35),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(59,85,110,0.4),transparent_50%)]" />
+    <section className="relative py-40 px-6 md:px-12 bg-obsidian overflow-hidden">
+      <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_30%,rgba(212,175,90,0.18),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(110,26,26,0.25),transparent_55%)]" />
       <div className="relative mx-auto max-w-3xl text-center">
-        <SectionLabel className="text-champagne">Your Presence</SectionLabel>
-        <h2 className="mt-4 font-serif text-4xl md:text-6xl">Will you join us?</h2>
+        <SectionLabel>Your Presence</SectionLabel>
+        <h2 className="mt-6 font-serif text-4xl md:text-6xl text-white" style={{ fontWeight: 300 }}>
+          Will you stand with us?
+        </h2>
+        <p className="mt-4 font-korean text-base text-white/50">함께 해주시겠습니까</p>
 
-        <div className="mt-16 flex justify-center">
+        <div className="mt-16 flex justify-center min-h-[420px] items-center">
           <AnimatePresence mode="wait">
             {stage === "idle" && (
-              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.5 }}>
+              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.7 }}>
                 <MagneticButton onClick={() => setStage("form")}>RSVP</MagneticButton>
               </motion.div>
             )}
@@ -335,27 +419,31 @@ function RSVP() {
               <motion.form
                 key="form"
                 onSubmit={submit}
-                initial={{ opacity: 0, y: 30, scale: 0.96 }}
+                initial={{ opacity: 0, y: 40, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="w-full max-w-lg rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-8 md:p-10 text-left"
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="w-full max-w-lg rounded-sm border border-gold-deep/40 bg-white/[0.03] backdrop-blur-md p-8 md:p-10 text-left"
               >
-                <Field label="Your name">
-                  <input required className="w-full bg-transparent border-b border-white/30 py-2 font-sans text-base focus:outline-none focus:border-champagne transition-colors" />
+                <Field label="Your Name">
+                  <input required className="w-full bg-transparent border-b border-gold-deep/40 py-2 font-sans text-base text-white placeholder:text-white/30 focus:outline-none focus:border-gold transition-colors duration-700" />
                 </Field>
 
                 <Field label="Attending?">
-                  <div className="mt-2 grid grid-cols-2 gap-3">
+                  <div className="mt-3 grid grid-cols-2 gap-3">
                     {([
-                      { v: "yes", l: "Joyfully Accept" },
-                      { v: "no", l: "Regretfully Decline" },
+                      { v: "yes", l: "Accept" },
+                      { v: "no", l: "Decline" },
                     ] as const).map((o) => (
                       <button
                         key={o.v}
                         type="button"
                         onClick={() => setAttending(o.v)}
-                        className={`rounded-full border px-4 py-3 font-sans text-xs tracking-[0.2em] uppercase transition-all duration-500 ${attending === o.v ? "bg-champagne text-ink border-champagne" : "border-white/30 text-white/80 hover:border-white"}`}
+                        className={`rounded-full border px-4 py-3 font-sans text-[0.6rem] tracking-[0.4em] uppercase transition-all duration-700 ${
+                          attending === o.v
+                            ? "bg-gold text-black border-gold shadow-[0_0_24px_rgba(212,175,90,0.4)]"
+                            : "border-gold-deep/40 text-white/70 hover:border-gold hover:text-gold"
+                        }`}
                       >
                         {o.l}
                       </button>
@@ -363,43 +451,38 @@ function RSVP() {
                   </div>
                 </Field>
 
-                <Field label="Dietary restrictions">
-                  <input className="w-full bg-transparent border-b border-white/30 py-2 font-sans text-base focus:outline-none focus:border-champagne transition-colors" placeholder="None" />
+                <Field label="Dietary Restrictions">
+                  <input className="w-full bg-transparent border-b border-gold-deep/40 py-2 font-sans text-base text-white placeholder:text-white/30 focus:outline-none focus:border-gold transition-colors duration-700" placeholder="None" />
                 </Field>
 
-                <Field label="A song that will get you on the dance floor">
-                  <input className="w-full bg-transparent border-b border-white/30 py-2 font-sans text-base focus:outline-none focus:border-champagne transition-colors" placeholder="Artist — Title" />
+                <Field label="Preferred Welcome Gift">
+                  <div className="relative">
+                    <select
+                      value={gift}
+                      onChange={(e) => setGift(e.target.value)}
+                      className="w-full appearance-none bg-transparent border-b border-gold-deep/40 py-2 pr-8 font-sans text-base text-white focus:outline-none focus:border-gold transition-colors duration-700"
+                    >
+                      <option value="" className="bg-obsidian">Select a gift</option>
+                      <option value="tea" className="bg-obsidian">Heirloom Tea Set</option>
+                      <option value="silk" className="bg-obsidian">Hand-woven Silk Scarf</option>
+                      <option value="perfume" className="bg-obsidian">Custom Hanbang Perfume</option>
+                      <option value="celadon" className="bg-obsidian">Celadon Keepsake</option>
+                    </select>
+                    <Gift className="absolute right-1 top-3 h-4 w-4 text-gold/70 pointer-events-none" strokeWidth={1.2} />
+                  </div>
                 </Field>
 
                 <button
                   type="submit"
                   disabled={!attending}
-                  className="mt-10 w-full rounded-full bg-champagne text-ink py-4 font-sans text-xs tracking-[0.35em] uppercase disabled:opacity-40 transition-all duration-500 hover:bg-white"
+                  className="mt-10 w-full rounded-full border border-gold bg-gold/10 text-gold py-4 font-sans text-[0.6rem] tracking-[0.45em] uppercase disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-700 hover:bg-gold hover:text-black"
                 >
                   Send Reply
                 </button>
               </motion.form>
             )}
 
-            {stage === "done" && (
-              <motion.div
-                key="done"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative w-full max-w-lg rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-12 text-center overflow-hidden"
-              >
-                <Sparkle delay={0} x="15%" y="25%" />
-                <Sparkle delay={0.3} x="80%" y="35%" />
-                <Sparkle delay={0.6} x="25%" y="75%" />
-                <Sparkle delay={0.9} x="70%" y="70%" />
-                <Flower2 className="mx-auto h-10 w-10 text-champagne" strokeWidth={1} />
-                <h3 className="mt-6 font-serif text-3xl md:text-4xl italic">Thank you.</h3>
-                <p className="mt-4 font-sans text-sm text-white/70 leading-relaxed">
-                  Your reply has been received. We can't wait to share the lake with you.
-                </p>
-              </motion.div>
-            )}
+            {stage === "done" && <ThankYou />}
           </AnimatePresence>
         </div>
       </div>
@@ -407,43 +490,72 @@ function RSVP() {
   );
 }
 
-function Sparkle({ delay, x, y }: { delay: number; x: string; y: string }) {
+function ThankYou() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
-      transition={{ duration: 2.2, delay, repeat: Infinity, repeatDelay: 1.5 }}
-      className="absolute"
-      style={{ left: x, top: y }}
+      key="done"
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      className="relative w-full max-w-lg rounded-sm border border-gold-deep/50 bg-white/[0.03] backdrop-blur-md p-12 text-center overflow-hidden"
     >
-      <Sparkles className="h-4 w-4 text-champagne" />
+      {/* Gold particles */}
+      {Array.from({ length: 14 }).map((_, i) => (
+        <Particle key={i} index={i} />
+      ))}
+      <Sparkles className="mx-auto h-8 w-8 text-gold" strokeWidth={1} />
+      <h3 className="relative mt-6 font-serif text-4xl italic text-white" style={{ fontWeight: 300 }}>Thank you.</h3>
+      <p className="relative mt-3 font-korean text-base text-gold/80">감사합니다</p>
+      <p className="relative mt-6 font-sans text-sm text-white/60 leading-relaxed max-w-xs mx-auto">
+        Your reply has been received. We will see you in Seoul.
+      </p>
     </motion.div>
+  );
+}
+
+function Particle({ index }: { index: number }) {
+  const left = (index * 37) % 100;
+  const delay = (index % 7) * 0.4;
+  const size = 2 + (index % 3);
+  return (
+    <motion.span
+      className="absolute rounded-full bg-gold"
+      style={{ left: `${left}%`, bottom: 0, width: size, height: size, boxShadow: "0 0 8px rgba(212,175,90,0.8)" }}
+      initial={{ y: 0, opacity: 0 }}
+      animate={{ y: -260, opacity: [0, 1, 1, 0] }}
+      transition={{ duration: 5 + (index % 4), delay, repeat: Infinity, ease: "easeOut" }}
+    />
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="mt-6 block first:mt-0">
-      <span className="font-sans text-[0.6rem] tracking-[0.4em] uppercase text-white/60">{label}</span>
+    <label className="mt-7 block first:mt-0">
+      <span className="font-sans text-[0.55rem] tracking-[0.45em] uppercase text-gold/70">{label}</span>
       <div className="mt-2">{children}</div>
     </label>
   );
 }
 
-function SectionLabel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <span className={`font-sans text-[0.65rem] tracking-[0.45em] uppercase text-forest ${className}`}>
-      {children}
-    </span>
+    <div className="flex items-center justify-center gap-4 text-gold">
+      <span className="h-px w-8 bg-gold/50" />
+      <span className="font-sans text-[0.6rem] tracking-[0.55em] uppercase">{children}</span>
+      <span className="h-px w-8 bg-gold/50" />
+    </div>
   );
 }
 
 function Footer() {
   return (
-    <footer className="py-16 text-center bg-cream">
-      <p className="font-serif italic text-2xl text-ink/80">H &middot; G</p>
-      <p className="mt-3 font-sans text-[0.6rem] tracking-[0.45em] uppercase text-ink/50">
-        Lake Como · 24 September 2026
+    <footer className="py-20 text-center bg-black border-t border-gold-deep/20">
+      <p className="font-serif italic text-3xl text-gold" style={{ fontWeight: 300, textShadow: "0 0 18px rgba(212,175,90,0.4)" }}>
+        N &middot; J
+      </p>
+      <p className="mt-4 font-korean text-sm text-white/40">남준 · 지연</p>
+      <p className="mt-3 font-sans text-[0.55rem] tracking-[0.5em] uppercase text-white/40">
+        Seoul · 18 October 2026
       </p>
     </footer>
   );
