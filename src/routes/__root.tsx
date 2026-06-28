@@ -84,6 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Two Eras. One Eternity. The wedding of Heo Nam-jun and Lim Ji-yeon, October 18, 2026 — Seoul." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Nam-jun & Ji-yeon — 18.10.2026" },
+      { name: "twitter:description", content: "Two Eras. One Eternity. The wedding of Heo Nam-jun and Lim Ji-yeon, October 18, 2026 — Seoul." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0a3763ad-3144-43b6-8bc0-aca8b4eb5591/id-preview-da2c3dae--ce69cc30-00a8-498f-b85e-e71388b4bcc1.lovable.app-1782674452063.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0a3763ad-3144-43b6-8bc0-aca8b4eb5591/id-preview-da2c3dae--ce69cc30-00a8-498f-b85e-e71388b4bcc1.lovable.app-1782674452063.png" },
     ],
     links: [
       {
