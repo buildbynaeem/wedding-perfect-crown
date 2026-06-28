@@ -146,20 +146,21 @@
 
   body {
     background-color: var(--background);
-    color: var(--ink);
+    color: var(--foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "ss02";
     -webkit-font-smoothing: antialiased;
   }
   .font-serif { font-family: var(--font-serif); }
+  .font-korean { font-family: var(--font-korean); }
   .font-sans { font-family: var(--font-sans); }
 }
 
-@utility text-ink { color: var(--ink); }
-@utility text-forest { color: var(--forest); }
-@utility text-lake { color: var(--lake); }
-@utility text-champagne { color: var(--champagne); }
-@utility bg-forest { background-color: var(--forest); }
-@utility bg-lake { background-color: var(--lake); }
-@utility bg-champagne { background-color: var(--champagne); }
-@utility bg-cream { background-color: #FAF9F6; }
+@utility text-gold { color: var(--gold); }
+@utility text-gold-deep { color: var(--gold-deep); }
+@utility text-crimson { color: var(--crimson); }
+@utility bg-obsidian { background-color: var(--obsidian); }
+@utility bg-gold { background-color: var(--gold); }
+@utility bg-crimson { background-color: var(--crimson); }
+@utility border-gold { border-color: var(--gold); }
+@utility border-gold-deep { border-color: var(--gold-deep); }
