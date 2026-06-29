@@ -73,7 +73,7 @@ function Hero() {
     <section ref={ref} className="relative h-screen w-full overflow-hidden bg-black">
       {/* Video Background */}
       <video
-        src="https://www.w3schools.com/html/mov_bbb.mp4"
+        src="/hero.webm"
         autoPlay
         muted
         playsInline
