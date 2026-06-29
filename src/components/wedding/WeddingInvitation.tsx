@@ -70,14 +70,14 @@ function Hero() {
   return (
     <section
       ref={ref}
-      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden bg-transparent"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black"
     >
       {/* Video Element */}
       <video
         src="/hero.webm"
         autoPlay={true}
         muted={true}
-        loop={true}
+        loop={false}
         playsInline={true}
         controls={false}
         preload="auto"
@@ -92,32 +92,38 @@ function Hero() {
         }}
       />
 
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-slate-950/60" style={{ zIndex: 10 }}></div>
+
       {/* Content Wrapper */}
-      <div style={{ position: 'relative', zIndex: 10 }} className="flex flex-col items-center justify-center w-full px-4 text-center">
+      <div style={{ position: 'relative', zIndex: 20 }} className="flex flex-col items-center justify-center w-full px-4 text-center">
+        {/* Thin gold frame */}
+        <div className="pointer-events-none absolute inset-6 border border-gold-deep/40" />
+        
         <motion.div style={{ y: textY, opacity }} className="flex flex-col items-center justify-center w-full">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, ease: "easeOut" }}
-            className="flex items-center gap-4 text-amber-500"
+            className="flex items-center gap-4 text-gold"
           >
-            <span className="h-px w-10 bg-amber-500/60" />
+            <span className="h-px w-10 bg-gold/60" />
             <span className="font-sans text-[0.62rem] tracking-[0.55em] uppercase">{text[language].header}</span>
-            <span className="h-px w-10 bg-amber-500/60" />
+            <span className="h-px w-10 bg-gold/60" />
           </motion.div>
 
           {/* Fixed names: stack on small screens, inline on md+ */}
           <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
-            <h1 className="text-3xl md:text-6xl font-serif text-amber-500 whitespace-nowrap">Cha Se-gye</h1>
+            <h1 className="text-3xl md:text-6xl font-serif text-white whitespace-nowrap">Cha Se-gye</h1>
             <span className="text-amber-500 text-2xl md:text-5xl font-serif italic"> & </span>
-            <h1 className="text-3xl md:text-6xl font-serif text-amber-500 whitespace-nowrap">Shin Seo-ri</h1>
+            <h1 className="text-3xl md:text-6xl font-serif text-white whitespace-nowrap">Shin Seo-ri</h1>
           </div>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.4, delay: 1.8 }}
-            className="mt-10 font-serif italic text-lg md:text-xl text-amber-300 tracking-wide"
+            className="mt-10 font-serif italic text-lg md:text-xl text-white/75 tracking-wide"
           >
             {text[language].subtitle}
           </motion.p>
@@ -126,10 +132,10 @@ function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 2.2 }}
-            className="mt-12 flex items-center gap-5 font-sans text-[0.6rem] md:text-xs tracking-[0.5em] uppercase text-amber-400"
+            className="mt-12 flex items-center gap-5 font-sans text-[0.6rem] md:text-xs tracking-[0.5em] uppercase text-gold/80"
           >
             <span>18 · 10 · 2026</span>
-            <span className="h-px w-8 bg-amber-400/40" />
+            <span className="h-px w-8 bg-gold/40" />
             <span>{text[language].location}</span>
           </motion.div>
         </motion.div>
@@ -138,13 +144,13 @@ function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.6 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-amber-400"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gold/80"
         >
           <motion.div
             animate={{ y: [0, 10, 0], opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
             className="flex flex-col items-center gap-2"
-            style={{ filter: "drop-shadow(0 0 8px rgba(217,119,6,0.6))" }}
+            style={{ filter: "drop-shadow(0 0 8px rgba(212,175,90,0.6))" }}
           >
             <span className="font-sans text-[0.6rem] tracking-[0.45em] uppercase">{text[language].scroll}</span>
             <ChevronDown className="h-4 w-4" />
