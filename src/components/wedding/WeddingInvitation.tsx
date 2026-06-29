@@ -64,13 +64,11 @@ function Hero({ hasEntered }: { hasEntered: boolean }) {
   const text = {
     EN: {
       intro: "The Celebration of Love",
-      dateLocation: "OCTOBER 18, 2026 | SEOUL, KOREA",
-      scroll: "Scroll to Enter"
+      dateLocation: "OCTOBER 18, 2026 | SEOUL, KOREA"
     },
     KO: {
       intro: "사랑의 축제",
-      dateLocation: "2026년 10월 18일 | 서울, 한국",
-      scroll: "스크롤하여 들어오기"
+      dateLocation: "2026년 10월 18일 | 서울, 한국"
     }
   };
 
@@ -141,23 +139,7 @@ function Hero({ hasEntered }: { hasEntered: boolean }) {
           </div>
         </motion.div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.6 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gold/80"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-2"
-            style={{ filter: "drop-shadow(0 0 8px rgba(212,175,90,0.6))" }}
-          >
-            <span className="font-sans text-[0.6rem] tracking-[0.45em] uppercase">{text[language].scroll}</span>
-            <ChevronDown className="h-4 w-4" />
-          </motion.div>
-        </motion.div>
+
       </div>
     </section>
   );
