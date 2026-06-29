@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ChevronDown, Sparkles, Gift } from "lucide-react";
+import { ChevronDown, Sparkles, Gift, ChevronLeft, ChevronRight } from "lucide-react";
+import { Autoplay, EffectCards, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css/effect-cards";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css";
+import { cn } from "@/lib/utils";
 import heroImg from "@/assets/hero-namjun.jpg";
+import { useLanguage } from "@/lib/language-context";
 
 const WEDDING_DATE = new Date("2026-10-18T17:00:00+09:00");
 
@@ -29,6 +37,7 @@ export function WeddingInvitation() {
       <Hero />
       <Timeline />
       <DressCode />
+      <GalleryCarousel />
       <RSVP />
       <Footer />
     </main>
@@ -44,6 +53,22 @@ function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
 
   const letters = "Nam-jun  &  Ji-yeon".split("");
+  const { language } = useLanguage();
+
+  const text = {
+    EN: {
+      subtitle: "Two Eras. One Eternity.",
+      location: "The Shilla, Seoul",
+      scroll: "Scroll to Enter",
+      header: "Joseon · Seoul · MMXXVI"
+    },
+    KO: {
+      subtitle: "두 시대. 하나의 영원.",
+      location: "서울 신라호텔",
+      scroll: "스크롤하여 들어오기",
+      header: "조선 · 서울 · MMXXVI"
+    }
+  };
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden bg-black">
@@ -64,7 +89,7 @@ function Hero() {
           className="flex items-center gap-4 text-gold"
         >
           <span className="h-px w-10 bg-gold/60" />
-          <span className="font-sans text-[0.62rem] tracking-[0.55em] uppercase">Joseon · Seoul · MMXXVI</span>
+          <span className="font-sans text-[0.62rem] tracking-[0.55em] uppercase">{text[language].header}</span>
           <span className="h-px w-10 bg-gold/60" />
         </motion.div>
 
@@ -91,7 +116,7 @@ function Hero() {
           transition={{ duration: 1.4, delay: 1.8 }}
           className="mt-10 font-serif italic text-lg md:text-xl text-white/75 tracking-wide"
         >
-          Two Eras. One Eternity.
+          {text[language].subtitle}
         </motion.p>
 
         <motion.div
@@ -102,7 +127,7 @@ function Hero() {
         >
           <span>18 · 10 · 2026</span>
           <span className="h-px w-8 bg-gold/40" />
-          <span>The Shilla, Seoul</span>
+          <span>{text[language].location}</span>
         </motion.div>
       </motion.div>
 
@@ -118,7 +143,7 @@ function Hero() {
           className="flex flex-col items-center gap-2"
           style={{ filter: "drop-shadow(0 0 8px rgba(212,175,90,0.6))" }}
         >
-          <span className="font-sans text-[0.6rem] tracking-[0.45em] uppercase">Scroll to Enter</span>
+          <span className="font-sans text-[0.6rem] tracking-[0.45em] uppercase">{text[language].scroll}</span>
           <ChevronDown className="h-4 w-4" />
         </motion.div>
       </motion.div>
@@ -129,12 +154,61 @@ function Hero() {
 /* ---------------- TIMELINE + COUNTDOWN ---------------- */
 function Timeline() {
   const { days, hours, minutes, seconds, ready } = useCountdown(WEDDING_DATE);
+  const { language } = useLanguage();
+
   const events = [
-    { day: "Friday · Oct 16", title: "The Rehearsal", korean: "예행 연습", time: "7:00 PM", place: "Garden Pavilion, The Shilla" },
-    { day: "Saturday · Oct 17", title: "Tea Ceremony", korean: "다례", time: "11:00 AM", place: "Private Salon" },
-    { day: "Sunday · Oct 18", title: "The Grand Ceremony", korean: "본 예식", time: "5:00 PM", place: "The Shilla, Yeong Bin Gwan" },
-    { day: "Sunday · Oct 18", title: "The Afterparty", korean: "애프터파티", time: "10:00 PM", place: "Rooftop, Seoul Skyline" },
+    { 
+      day: { EN: "Friday · Oct 16", KO: "금요일 · 10월 16일" }, 
+      title: { EN: "The Rehearsal", KO: "예행 연습" }, 
+      korean: "예행 연습", 
+      time: "7:00 PM", 
+      place: { EN: "Garden Pavilion, The Shilla", KO: "신라호텔 가든 파빌리온" }
+    },
+    { 
+      day: { EN: "Saturday · Oct 17", KO: "토요일 · 10월 17일" }, 
+      title: { EN: "Tea Ceremony", KO: "다례" }, 
+      korean: "다례", 
+      time: "11:00 AM", 
+      place: { EN: "Private Salon", KO: "프라이빗 살롱" }
+    },
+    { 
+      day: { EN: "Sunday · Oct 18", KO: "일요일 · 10월 18일" }, 
+      title: { EN: "The Grand Ceremony", KO: "본 예식" }, 
+      korean: "본 예식", 
+      time: "5:00 PM", 
+      place: { EN: "The Shilla, Yeong Bin Gwan", KO: "신라호텔 영빈관" }
+    },
+    { 
+      day: { EN: "Sunday · Oct 18", KO: "일요일 · 10월 18일" }, 
+      title: { EN: "The Afterparty", KO: "애프터파티" }, 
+      korean: "애프터파티", 
+      time: "10:00 PM", 
+      place: { EN: "Rooftop, Seoul Skyline", KO: "서울 스카이라인 루프탑" }
+    },
   ];
+
+  const text = {
+    EN: {
+      sectionLabel: "The Fate Timeline",
+      title: "A weekend written in",
+      titleGold: "gold",
+      countdown: "Until We Begin",
+      days: "Days",
+      hours: "Hours",
+      minutes: "Minutes",
+      seconds: "Seconds"
+    },
+    KO: {
+      sectionLabel: "운명의 타임라인",
+      title: "금으로 새겨진 주말",
+      titleGold: "",
+      countdown: "시작까지",
+      days: "일",
+      hours: "시간",
+      minutes: "분",
+      seconds: "초"
+    }
+  };
 
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 30%"] });
@@ -143,25 +217,31 @@ function Timeline() {
   return (
     <section className="relative py-32 md:py-40 px-6 md:px-12 bg-obsidian">
       <div className="mx-auto max-w-6xl">
-        <SectionLabel>The Fate Timeline</SectionLabel>
+        <SectionLabel>{text[language].sectionLabel}</SectionLabel>
         <h2 className="mt-6 font-serif text-4xl md:text-6xl text-white max-w-3xl" style={{ fontWeight: 300 }}>
-          A weekend written in <span className="italic text-gold">gold</span>.
+          {language === "EN" ? (
+            <>
+              {text[language].title} <span className="italic text-gold">{text[language].titleGold}</span>.
+            </>
+          ) : (
+            <>{text[language].title}.</>
+          )}
         </h2>
 
         {/* Countdown — neon glow */}
-        <div className="mt-16 rounded-sm border border-gold-deep/30 bg-white/[0.02] backdrop-blur-md p-8 md:p-12 relative overflow-hidden">
+        <div className="mt-16 rounded-sm border border-gold-deep/20 bg-white/[0.02] backdrop-blur-md py-10 px-6 md:py-12 md:px-12 relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,175,90,0.08),transparent_60%)]" />
-          <p className="font-sans text-[0.6rem] tracking-[0.5em] uppercase text-gold/80">Until We Begin</p>
-          <div className="mt-8 grid grid-cols-4 gap-3 md:gap-10 tabular-nums">
+          <p className="font-sans text-[0.6rem] tracking-[0.5em] uppercase text-gold/80">{text[language].countdown}</p>
+          <div className="mt-8 grid grid-cols-4 gap-3 md:gap-10">
             {[
-              { v: days, l: "Days" },
-              { v: hours, l: "Hours" },
-              { v: minutes, l: "Minutes" },
-              { v: seconds, l: "Seconds" },
+              { v: days, l: text[language].days },
+              { v: hours, l: text[language].hours },
+              { v: minutes, l: text[language].minutes },
+              { v: seconds, l: text[language].seconds },
             ].map((u) => (
-              <div key={u.l} className="flex flex-col">
+              <div key={u.l} className="flex flex-col items-center justify-center min-w-[70px]">
                 <span
-                  className="font-serif text-5xl md:text-8xl text-white leading-none"
+                  className="font-serif text-5xl md:text-8xl text-white leading-none tabular-nums tracking-tight"
                   style={{ fontWeight: 300, textShadow: ready ? "0 0 24px rgba(212,175,90,0.35)" : "none" }}
                 >
                   {ready ? String(u.v).padStart(2, "0") : "00"}
@@ -186,7 +266,7 @@ function Timeline() {
 
           <div className="space-y-20 md:space-y-32">
             {events.map((e, i) => (
-              <TimelineRow key={e.title} event={e} index={i} />
+              <TimelineRow key={i} event={e} index={i} />
             ))}
           </div>
         </div>
@@ -195,8 +275,19 @@ function Timeline() {
   );
 }
 
-function TimelineRow({ event: e, index }: { event: { day: string; title: string; korean: string; time: string; place: string }; index: number }) {
+function TimelineRow({ event: e, index }: { 
+  event: { 
+    day: { EN: string; KO: string }; 
+    title: { EN: string; KO: string }; 
+    korean: string; 
+    time: string; 
+    place: { EN: string; KO: string }
+  }; 
+  index: number 
+}) {
   const left = index % 2 === 0;
+  const { language } = useLanguage();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -211,11 +302,11 @@ function TimelineRow({ event: e, index }: { event: { day: string; title: string;
       </div>
 
       <div className={`pl-8 md:pl-0 ${left ? "md:text-right md:pr-16" : "md:col-start-2 md:pl-16"}`}>
-        <p className="font-sans text-[0.6rem] tracking-[0.45em] uppercase text-gold/80">{e.day}</p>
-        <h3 className="mt-3 font-serif text-3xl md:text-4xl text-white" style={{ fontWeight: 300 }}>{e.title}</h3>
+        <p className="font-sans text-[0.6rem] tracking-[0.45em] uppercase text-gold/80">{e.day[language]}</p>
+        <h3 className="mt-3 font-serif text-3xl md:text-4xl text-white" style={{ fontWeight: 300 }}>{e.title[language]}</h3>
         <p className="mt-2 font-korean text-base text-white/40">{e.korean}</p>
         <div className={`mt-5 h-px w-12 bg-gold-deep/60 ${left ? "md:ml-auto" : ""}`} />
-        <p className="mt-5 font-sans text-sm text-white/60">{e.time} · {e.place}</p>
+        <p className="mt-5 font-sans text-sm text-white/60">{e.time} · {e.place[language]}</p>
       </div>
     </motion.div>
   );
@@ -226,6 +317,34 @@ function DressCode() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [revealed, setRevealed] = useState(false);
   const drawing = useRef(false);
+  const { language } = useLanguage();
+
+  const text = {
+    EN: {
+      sectionLabel: "Attire",
+      title: "A code,",
+      titleGold: "sealed in gold",
+      subtitle: "Drag across the card to reveal what to wear.",
+      reveal: "Reveal the Dress Code",
+      dressCode: "The Dress Code",
+      dressCodeMain: "Black Tie",
+      dressCodeOr: "or Hanbok",
+      dressCodeKorean: "정장 또는 한복",
+      palette: "Palette: Obsidian, Gold, and Deep Crimson."
+    },
+    KO: {
+      sectionLabel: "복장",
+      title: "금으로 봉인된",
+      titleGold: "드레스 코드",
+      subtitle: "카드를 긁어서 복장을 확인하세요.",
+      reveal: "드레스 코드 공개하기",
+      dressCode: "드레스 코드",
+      dressCodeMain: "블랙타이",
+      dressCodeOr: "또는 한복",
+      dressCodeKorean: "정장 또는 한복",
+      palette: "색상: 오브시디안, 골드, 딥 크림슨"
+    }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -265,12 +384,12 @@ function DressCode() {
     ctx.fillStyle = goldGrad;
     ctx.textAlign = "center";
     ctx.font = "300 italic 30px 'Cormorant Garamond', serif";
-    ctx.fillText("Reveal the Dress Code", rect.width / 2, rect.height / 2 - 8);
+    ctx.fillText(text[language].reveal, rect.width / 2, rect.height / 2 - 8);
 
     ctx.fillStyle = "rgba(212,175,90,0.55)";
     ctx.font = "300 9px 'Inter', sans-serif";
     ctx.fillText("◆  S C R A T C H   T O   R E V E A L  ◆", rect.width / 2, rect.height / 2 + 24);
-  }, []);
+  }, [language]);
 
   function scratch(x: number, y: number) {
     const canvas = canvasRef.current;
@@ -302,12 +421,20 @@ function DressCode() {
   return (
     <section className="relative py-32 md:py-40 px-6 md:px-12 bg-black">
       <div className="mx-auto max-w-3xl text-center">
-        <SectionLabel>Attire</SectionLabel>
+        <SectionLabel>{text[language].sectionLabel}</SectionLabel>
         <h2 className="mt-6 font-serif text-4xl md:text-5xl text-white" style={{ fontWeight: 300 }}>
-          A code, <span className="italic text-gold">sealed in gold</span>.
+          {language === "EN" ? (
+            <>
+              {text[language].title} <span className="italic text-gold">{text[language].titleGold}</span>.
+            </>
+          ) : (
+            <>
+              <span className="italic text-gold">{text[language].titleGold}</span> {text[language].title}.
+            </>
+          )}
         </h2>
         <p className="mt-4 font-sans text-sm tracking-wide text-white/50 max-w-md mx-auto">
-          Drag across the card to reveal what to wear.
+          {text[language].subtitle}
         </p>
 
         <motion.div
@@ -324,14 +451,14 @@ function DressCode() {
 
           {/* Bottom layer: revealed content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-            <p className="font-sans text-[0.55rem] tracking-[0.5em] uppercase text-gold/70">The Dress Code</p>
+            <p className="font-sans text-[0.55rem] tracking-[0.5em] uppercase text-gold/70">{text[language].dressCode}</p>
             <h3 className="mt-4 font-serif text-3xl md:text-4xl italic text-white" style={{ fontWeight: 300 }}>
-              Black Tie<span className="text-gold"> · </span>or Hanbok
+              {text[language].dressCodeMain}<span className="text-gold"> · </span>{text[language].dressCodeOr}
             </h3>
-            <p className="mt-2 font-korean text-sm text-white/40">정장 또는 한복</p>
+            <p className="mt-2 font-korean text-sm text-white/40">{text[language].dressCodeKorean}</p>
             <div className="mt-6 h-px w-16 bg-gold-deep/60" />
             <p className="mt-6 font-sans text-sm text-white/65 leading-relaxed max-w-xs">
-              Palette: Obsidian, Gold, and Deep Crimson.
+              {text[language].palette}
             </p>
             <div className="mt-5 flex gap-3">
               {["#0a0a0a", "#d4af5a", "#6e1a1a", "#1a1a24"].map((c) => (
@@ -358,10 +485,146 @@ function DressCode() {
   );
 }
 
+/* ---------------- GALLERY CAROUSEL ---------------- */
+function GalleryCarousel() {
+  const { language } = useLanguage();
+
+  const text = {
+    EN: {
+      sectionLabel: "A Glimpse of Eternity",
+      subtext: "Moments captured in time."
+    },
+    KO: {
+      sectionLabel: "永遠の垣間見",
+      subtext: "時の中に切り取られた瞬間。"
+    }
+  };
+
+  const images = [
+    { src: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 1" },
+    { src: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 2" },
+    { src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 3" },
+    { src: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 4" },
+    { src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 5" },
+  ];
+
+  return (
+    <section className="relative w-full overflow-hidden py-24 bg-obsidian">
+      <div className="mx-auto max-w-6xl px-6 md:px-12">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <h2 className="font-serif text-4xl md:text-6xl text-white" style={{ fontWeight: 300 }}>
+            {text[language].sectionLabel}
+          </h2>
+          <p className="mt-4 font-serif italic text-lg md:text-xl text-white/60 tracking-wide">
+            {text[language].subtext}
+          </p>
+        </div>
+
+        {/* Swiper Carousel */}
+        <Carousel_002 images={images} showNavigation={true} loop={true} />
+      </div>
+    </section>
+  );
+}
+
+const Carousel_002 = ({
+  images,
+  className,
+  showPagination = false,
+  showNavigation = false,
+  loop = true,
+  autoplay = false,
+  spaceBetween = 40,
+}: {
+  images: { src: string; alt: string }[];
+  className?: string;
+  showPagination?: boolean;
+  showNavigation?: boolean;
+  loop?: boolean;
+  autoplay?: boolean;
+  spaceBetween?: number;
+}) => {
+  const css = `
+  .Carousal_002 {
+    padding-bottom: 50px !important;
+  }
+  `;
+  return (
+    <motion.div
+      initial={{ opacity: 0, translateY: 20 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{
+        duration: 0.3,
+        delay: 0.5,
+      }}
+      className={cn("relative w-full max-w-3xl mx-auto", className)}
+    >
+      <style>{css}</style>
+
+      <Swiper
+        spaceBetween={spaceBetween}
+        autoplay={
+          autoplay
+            ? {
+                delay: 1000,
+                disableOnInteraction: false,
+              }
+            : false
+        }
+        effect="cards"
+        grabCursor={true}
+        loop={loop}
+        pagination={
+          showPagination
+            ? {
+                clickable: true,
+              }
+            : false
+        }
+        navigation={
+          showNavigation
+            ? {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+              }
+            : false
+        }
+        className="Carousal_002 h-[380px] md:h-[500px] w-[260px] md:w-[380px] mx-auto"
+        modules={[EffectCards, Autoplay, Pagination, Navigation]}
+      >
+        {images.map((image, index) => (
+          <SwiperSlide key={index} className="rounded-3xl">
+            <img
+              className="h-full w-full object-cover"
+              src={image.src}
+              alt={image.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          </SwiperSlide>
+        ))}
+        {showNavigation && (
+          <div>
+            <div className="swiper-button-next after:hidden">
+              <ChevronRight className="h-6 w-6 text-amber-500" />
+            </div>
+            <div className="swiper-button-prev after:hidden">
+              <ChevronLeft className="h-6 w-6 text-amber-500" />
+            </div>
+          </div>
+        )}
+      </Swiper>
+    </motion.div>
+  );
+};
+
 /* ---------------- RSVP ---------------- */
 function MagneticButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
   const ref = useRef<HTMLButtonElement>(null);
   const [p, setP] = useState({ x: 0, y: 0 });
+  const { language } = useLanguage();
+
   return (
     <motion.button
       ref={ref}
@@ -381,7 +644,7 @@ function MagneticButton({ onClick, children }: { onClick: () => void; children: 
         {children}
       </span>
       <span className="relative mt-2 font-sans text-[0.55rem] tracking-[0.5em] uppercase text-white/60">
-        Respond by Sept 1
+        {language === "EN" ? "Respond by Sept 1" : "9월 1일까지 답변해주세요"}
       </span>
     </motion.button>
   );
@@ -391,6 +654,46 @@ function RSVP() {
   const [stage, setStage] = useState<"idle" | "form" | "done">("idle");
   const [attending, setAttending] = useState<"yes" | "no" | null>(null);
   const [gift, setGift] = useState("");
+  const { language } = useLanguage();
+
+  const text = {
+    EN: {
+      sectionLabel: "Your Presence",
+      title: "Will you stand with us?",
+      rsvp: "RSVP",
+      name: "Your Name",
+      attending: "Attending?",
+      accept: "Accept",
+      decline: "Decline",
+      dietary: "Dietary Restrictions",
+      dietaryPlaceholder: "None",
+      gift: "Preferred Welcome Gift",
+      selectGift: "Select a gift",
+      tea: "Heirloom Tea Set",
+      silk: "Hand-woven Silk Scarf",
+      perfume: "Custom Hanbang Perfume",
+      celadon: "Celadon Keepsake",
+      send: "Send Reply"
+    },
+    KO: {
+      sectionLabel: "당신의 참석",
+      title: "함께 해주시겠습니까?",
+      rsvp: "RSVP",
+      name: "이름",
+      attending: "참석 여부?",
+      accept: "참석",
+      decline: "불참",
+      dietary: "식이 제한",
+      dietaryPlaceholder: "없음",
+      gift: "선호하는 환영 선물",
+      selectGift: "선물 선택",
+      tea: "가보 다기 세트",
+      silk: "수제 실크 스카프",
+      perfume: "커스텀 한방 향수",
+      celadon: "청자 기념품",
+      send: "답변 보내기"
+    }
+  };
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -401,9 +704,9 @@ function RSVP() {
     <section className="relative py-40 px-6 md:px-12 bg-obsidian overflow-hidden">
       <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_30%,rgba(212,175,90,0.18),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(110,26,26,0.25),transparent_55%)]" />
       <div className="relative mx-auto max-w-3xl text-center">
-        <SectionLabel>Your Presence</SectionLabel>
+        <SectionLabel>{text[language].sectionLabel}</SectionLabel>
         <h2 className="mt-6 font-serif text-4xl md:text-6xl text-white" style={{ fontWeight: 300 }}>
-          Will you stand with us?
+          {text[language].title}
         </h2>
         <p className="mt-4 font-korean text-base text-white/50">함께 해주시겠습니까</p>
 
@@ -411,7 +714,7 @@ function RSVP() {
           <AnimatePresence mode="wait">
             {stage === "idle" && (
               <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.7 }}>
-                <MagneticButton onClick={() => setStage("form")}>RSVP</MagneticButton>
+                <MagneticButton onClick={() => setStage("form")}>{text[language].rsvp}</MagneticButton>
               </motion.div>
             )}
 
@@ -425,15 +728,15 @@ function RSVP() {
                 transition={{ duration: 0.7, ease: "easeOut" }}
                 className="w-full max-w-lg rounded-sm border border-gold-deep/40 bg-white/[0.03] backdrop-blur-md p-8 md:p-10 text-left"
               >
-                <Field label="Your Name">
+                <Field label={text[language].name}>
                   <input required className="w-full bg-transparent border-b border-gold-deep/40 py-2 font-sans text-base text-white placeholder:text-white/30 focus:outline-none focus:border-gold transition-colors duration-700" />
                 </Field>
 
-                <Field label="Attending?">
+                <Field label={text[language].attending}>
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     {([
-                      { v: "yes", l: "Accept" },
-                      { v: "no", l: "Decline" },
+                      { v: "yes", l: text[language].accept },
+                      { v: "no", l: text[language].decline },
                     ] as const).map((o) => (
                       <button
                         key={o.v}
@@ -451,22 +754,22 @@ function RSVP() {
                   </div>
                 </Field>
 
-                <Field label="Dietary Restrictions">
-                  <input className="w-full bg-transparent border-b border-gold-deep/40 py-2 font-sans text-base text-white placeholder:text-white/30 focus:outline-none focus:border-gold transition-colors duration-700" placeholder="None" />
+                <Field label={text[language].dietary}>
+                  <input className="w-full bg-transparent border-b border-gold-deep/40 py-2 font-sans text-base text-white placeholder:text-white/30 focus:outline-none focus:border-gold transition-colors duration-700" placeholder={text[language].dietaryPlaceholder} />
                 </Field>
 
-                <Field label="Preferred Welcome Gift">
+                <Field label={text[language].gift}>
                   <div className="relative">
                     <select
                       value={gift}
                       onChange={(e) => setGift(e.target.value)}
                       className="w-full appearance-none bg-transparent border-b border-gold-deep/40 py-2 pr-8 font-sans text-base text-white focus:outline-none focus:border-gold transition-colors duration-700"
                     >
-                      <option value="" className="bg-obsidian">Select a gift</option>
-                      <option value="tea" className="bg-obsidian">Heirloom Tea Set</option>
-                      <option value="silk" className="bg-obsidian">Hand-woven Silk Scarf</option>
-                      <option value="perfume" className="bg-obsidian">Custom Hanbang Perfume</option>
-                      <option value="celadon" className="bg-obsidian">Celadon Keepsake</option>
+                      <option value="" className="bg-obsidian">{text[language].selectGift}</option>
+                      <option value="tea" className="bg-obsidian">{text[language].tea}</option>
+                      <option value="silk" className="bg-obsidian">{text[language].silk}</option>
+                      <option value="perfume" className="bg-obsidian">{text[language].perfume}</option>
+                      <option value="celadon" className="bg-obsidian">{text[language].celadon}</option>
                     </select>
                     <Gift className="absolute right-1 top-3 h-4 w-4 text-gold/70 pointer-events-none" strokeWidth={1.2} />
                   </div>
@@ -477,7 +780,7 @@ function RSVP() {
                   disabled={!attending}
                   className="mt-10 w-full rounded-full border border-gold bg-gold/10 text-gold py-4 font-sans text-[0.6rem] tracking-[0.45em] uppercase disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-700 hover:bg-gold hover:text-black"
                 >
-                  Send Reply
+                  {text[language].send}
                 </button>
               </motion.form>
             )}
@@ -491,6 +794,18 @@ function RSVP() {
 }
 
 function ThankYou() {
+  const { language } = useLanguage();
+  const text = {
+    EN: {
+      title: "Thank you.",
+      subtitle: "Your reply has been received. We will see you in Seoul."
+    },
+    KO: {
+      title: "감사합니다.",
+      subtitle: "답변이 접수되었습니다. 서울에서 뵙겠습니다."
+    }
+  };
+
   return (
     <motion.div
       key="done"
@@ -504,10 +819,10 @@ function ThankYou() {
         <Particle key={i} index={i} />
       ))}
       <Sparkles className="mx-auto h-8 w-8 text-gold" strokeWidth={1} />
-      <h3 className="relative mt-6 font-serif text-4xl italic text-white" style={{ fontWeight: 300 }}>Thank you.</h3>
+      <h3 className="relative mt-6 font-serif text-4xl italic text-white" style={{ fontWeight: 300 }}>{text[language].title}</h3>
       <p className="relative mt-3 font-korean text-base text-gold/80">감사합니다</p>
       <p className="relative mt-6 font-sans text-sm text-white/60 leading-relaxed max-w-xs mx-auto">
-        Your reply has been received. We will see you in Seoul.
+        {text[language].subtitle}
       </p>
     </motion.div>
   );
@@ -548,6 +863,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function Footer() {
+  const { language } = useLanguage();
   return (
     <footer className="py-20 text-center bg-black border-t border-gold-deep/20">
       <p className="font-serif italic text-3xl text-gold" style={{ fontWeight: 300, textShadow: "0 0 18px rgba(212,175,90,0.4)" }}>
@@ -555,7 +871,7 @@ function Footer() {
       </p>
       <p className="mt-4 font-korean text-sm text-white/40">남준 · 지연</p>
       <p className="mt-3 font-sans text-[0.55rem] tracking-[0.5em] uppercase text-white/40">
-        Seoul · 18 October 2026
+        {language === "EN" ? "Seoul · 18 October 2026" : "서울 · 2026년 10월 18일"}
       </p>
     </footer>
   );
