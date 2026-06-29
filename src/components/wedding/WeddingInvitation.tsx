@@ -75,19 +75,28 @@ function Hero() {
       {/* Video Element */}
       <video
         src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
+        autoPlay={true}
+        muted={true}
+        loop={true}
+        playsInline={true}
+        controls={false}
         preload="auto"
-        className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0
+        }}
       />
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-slate-950/60 z-10"></div>
+      <div className="absolute inset-0 bg-slate-950/60" style={{ zIndex: 10 }}></div>
 
       {/* Content Wrapper */}
-      <div className="relative z-20 flex flex-col items-center justify-center w-full px-4 text-center">
+      <div style={{ position: 'relative', zIndex: 20 }} className="flex flex-col items-center justify-center w-full px-4 text-center">
         {/* Thin gold frame */}
         <div className="pointer-events-none absolute inset-6 border border-gold-deep/40" />
 
