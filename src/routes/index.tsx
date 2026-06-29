@@ -29,7 +29,7 @@ function Index() {
         animate={{ opacity: isOpened ? 1 : 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
       >
-        <WeddingInvitation />
+        <WeddingInvitation hasEntered={isOpened} />
       </motion.div>
       <LanguageToggle />
     </LanguageProvider>

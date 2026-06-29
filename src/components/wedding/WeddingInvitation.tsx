@@ -31,10 +31,10 @@ function useCountdown(target: Date) {
   };
 }
 
-export function WeddingInvitation() {
+export function WeddingInvitation({ hasEntered }: { hasEntered: boolean }) {
   return (
     <main className="bg-obsidian text-white overflow-x-hidden">
-      <Hero />
+      <Hero hasEntered={hasEntered} />
       <Timeline />
       <DressCode />
       <GalleryCarousel />
@@ -45,12 +45,21 @@ export function WeddingInvitation() {
 }
 
 /* ---------------- HERO ---------------- */
-function Hero() {
+function Hero({ hasEntered }: { hasEntered: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const textY = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
   const { language } = useLanguage();
+
+  // Trigger video playback only when hasEntered becomes true
+  useEffect(() => {
+    if (hasEntered && videoRef.current) {
+      videoRef.current.currentTime = 0; // Ensure it starts from the very beginning
+      videoRef.current.play();
+    }
+  }, [hasEntered]);
 
   const text = {
     EN: {
@@ -74,8 +83,8 @@ function Hero() {
     >
       {/* Video Element */}
       <video
+        ref={videoRef}
         src="/hero.webm"
-        autoPlay={true}
         muted={true}
         loop={false}
         playsInline={true}
