@@ -74,7 +74,7 @@ function Hero() {
     >
       {/* Video Element */}
       <video
-        src="https://www.w3schools.com/html/mov_bbb.mp4"
+        src="/hero.webm"
         autoPlay={true}
         muted={true}
         loop={true}
