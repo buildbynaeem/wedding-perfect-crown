@@ -50,8 +50,6 @@ function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const textY = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
-
-  const letters = "Cha Se-gye  &  Shin Seo-ri".split("");
   const { language } = useLanguage();
 
   const text = {
@@ -70,26 +68,30 @@ function Hero() {
   };
 
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden bg-black">
-      {/* Video Background */}
+    <section
+      ref={ref}
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black"
+    >
+      {/* Video Element */}
       <video
-        src="/hero.webm"
+        src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
         autoPlay
         muted
+        loop
         playsInline
         preload="auto"
-        className="absolute inset-0 min-w-full min-h-full object-cover z-[-1]"
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
       />
 
-      {/* Dark Gradient Overlay */}
-      <div className="absolute inset-0 bg-black/40 z-0" />
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-slate-950/60 z-10"></div>
 
-      {/* All Content (text, borders, scroll indicator) */}
-      <div className="relative z-10 h-full">
+      {/* Content Wrapper */}
+      <div className="relative z-20 flex flex-col items-center justify-center w-full px-4 text-center">
         {/* Thin gold frame */}
         <div className="pointer-events-none absolute inset-6 border border-gold-deep/40" />
 
-        <motion.div style={{ y: textY, opacity }} className="flex h-full flex-col items-center justify-center px-6 text-center">
+        <motion.div style={{ y: textY, opacity }} className="flex flex-col items-center justify-center w-full">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -101,22 +103,12 @@ function Hero() {
             <span className="h-px w-10 bg-gold/60" />
           </motion.div>
 
-          <h1 className="mt-10 flex flex-wrap justify-center font-serif text-white">
-            {letters.map((ch, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1], delay: 0.5 + i * 0.05 }}
-                className={`inline-block leading-none ${
-                  ch === "&" ? "text-gold italic mx-2 text-3xl md:text-5xl" : "text-4xl md:text-7xl"
-                } ${ch === " " ? "w-2 md:w-3" : ""}`}
-                style={{ fontWeight: 300 }}
-              >
-                {ch === " " ? "\u00A0" : ch}
-              </motion.span>
-            ))}
-          </h1>
+          {/* Fixed names: stack on small screens, inline on md+ */}
+          <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+            <h1 className="text-3xl md:text-6xl font-serif text-white whitespace-nowrap">Cha Se-gye</h1>
+            <span className="text-amber-500 text-2xl md:text-5xl font-serif italic"> & </span>
+            <h1 className="text-3xl md:text-6xl font-serif text-white whitespace-nowrap">Shin Seo-ri</h1>
+          </div>
 
           <motion.p
             initial={{ opacity: 0 }}
