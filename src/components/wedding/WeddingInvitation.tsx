@@ -74,7 +74,7 @@ function Hero() {
     >
       {/* Video Element */}
       <video
-        src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+        src="https://www.w3schools.com/html/mov_bbb.mp4"
         autoPlay={true}
         muted={true}
         loop={true}
