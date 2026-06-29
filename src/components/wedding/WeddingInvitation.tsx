@@ -63,16 +63,14 @@ function Hero({ hasEntered }: { hasEntered: boolean }) {
 
   const text = {
     EN: {
-      subtitle: "Two Eras. One Eternity.",
-      location: "The Shilla, Seoul",
-      scroll: "Scroll to Enter",
-      header: "Joseon · Seoul · MMXXVI"
+      intro: "The Celebration of Love",
+      dateLocation: "OCTOBER 18, 2026 | SEOUL, KOREA",
+      scroll: "Scroll to Enter"
     },
     KO: {
-      subtitle: "두 시대. 하나의 영원.",
-      location: "서울 신라호텔",
-      scroll: "스크롤하여 들어오기",
-      header: "조선 · 서울 · MMXXVI"
+      intro: "사랑의 축제",
+      dateLocation: "2026년 10월 18일 | 서울, 한국",
+      scroll: "스크롤하여 들어오기"
     }
   };
 
@@ -106,49 +104,44 @@ function Hero({ hasEntered }: { hasEntered: boolean }) {
 
       {/* Content Wrapper */}
       <div style={{ position: 'relative', zIndex: 20 }} className="flex flex-col items-center justify-center w-full px-4 text-center">
-        {/* Thin gold frame */}
-        <div className="pointer-events-none absolute inset-6 border border-gold-deep/40" />
-        
         <motion.div style={{ y: textY, opacity }} className="flex flex-col items-center justify-center w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.4, ease: "easeOut" }}
-            className="flex items-center gap-4 text-gold"
-          >
-            <span className="h-px w-10 bg-gold/60" />
-            <span className="font-sans text-[0.62rem] tracking-[0.55em] uppercase">{text[language].header}</span>
-            <span className="h-px w-10 bg-gold/60" />
-          </motion.div>
+          {/* Luxury Glass Panel Container */}
+          <div className="p-8 md:p-12 border border-amber-500/20 bg-black/20 backdrop-blur-sm max-w-2xl w-full mx-auto transition-all duration-500 rounded-sm">
+            {/* Introductory Line */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
+            >
+              <span className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-amber-500/80 mb-4 font-sans block">
+                {text[language].intro}
+              </span>
+            </motion.div>
 
-          {/* Fixed names: stack on small screens, inline on md+ */}
-          <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
-            <h1 className="text-3xl md:text-6xl font-serif text-white whitespace-nowrap">Cha Se-gye</h1>
-            <span className="text-amber-500 text-2xl md:text-5xl font-serif italic"> & </span>
-            <h1 className="text-3xl md:text-6xl font-serif text-white whitespace-nowrap">Shin Seo-ri</h1>
+            {/* Main Names */}
+            <div className="mt-4 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+              <h1 className="text-3xl md:text-6xl font-serif tracking-wide text-white drop-shadow-md whitespace-nowrap">
+                Cha Se-gye
+              </h1>
+              <span className="text-amber-500 text-2xl md:text-5xl font-serif italic"> & </span>
+              <h1 className="text-3xl md:text-6xl font-serif tracking-wide text-white drop-shadow-md whitespace-nowrap">
+                Shin Seo-ri
+              </h1>
+            </div>
+
+            {/* Date & Location */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.4, delay: 1.8 }}
+              className="text-[11px] md:text-sm tracking-[0.25em] uppercase text-white/70 mt-6 font-sans"
+            >
+              {text[language].dateLocation}
+            </motion.p>
           </div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.4, delay: 1.8 }}
-            className="mt-10 font-serif italic text-lg md:text-xl text-white/75 tracking-wide"
-          >
-            {text[language].subtitle}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 2.2 }}
-            className="mt-12 flex items-center gap-5 font-sans text-[0.6rem] md:text-xs tracking-[0.5em] uppercase text-gold/80"
-          >
-            <span>18 · 10 · 2026</span>
-            <span className="h-px w-8 bg-gold/40" />
-            <span>{text[language].location}</span>
-          </motion.div>
         </motion.div>
 
+        {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
