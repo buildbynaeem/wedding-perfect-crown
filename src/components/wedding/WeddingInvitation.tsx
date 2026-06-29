@@ -495,11 +495,11 @@ function GalleryCarousel() {
   };
 
   const images = [
-    { src: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 1" },
-    { src: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 2" },
-    { src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 3" },
-    { src: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 4" },
-    { src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop", alt: "Gallery image 5" },
+    { src: "/card/1.png", alt: "Gallery image 1" },
+    { src: "/card/2.png", alt: "Gallery image 2" },
+    { src: "/card/3.png", alt: "Gallery image 3" },
+    { src: "/card/4.png", alt: "Gallery image 4" },
+    { src: "/card/5.png", alt: "Gallery image 5" },
   ];
 
   return (
