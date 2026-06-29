@@ -49,10 +49,9 @@ function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const textY = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  const bgY = useTransform(scrollYProgress, [0, 1], [0, 140]);
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
 
-  const letters = "Nam-jun  &  Ji-yeon".split("");
+  const letters = "Cha Se-gye  &  Shin Seo-ri".split("");
   const { language } = useLanguage();
 
   const text = {
@@ -72,16 +71,23 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden bg-black">
-      <motion.div style={{ y: bgY }} className="absolute inset-0 scale-110">
-        <img src={heroImg} alt="" className="h-full w-full object-cover opacity-70" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.85)_85%)]" />
-      </motion.div>
+      {/* Video Background */}
+      <video
+        src="/hero.webm"
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      />
+
+      {/* Dark Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/60 to-slate-950 z-10" />
 
       {/* Thin gold frame */}
-      <div className="pointer-events-none absolute inset-6 border border-gold-deep/40" />
+      <div className="pointer-events-none absolute inset-6 border border-gold-deep/40 z-20" />
 
-      <motion.div style={{ y: textY, opacity }} className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+      <motion.div style={{ y: textY, opacity }} className="relative z-20 flex h-full flex-col items-center justify-center px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -135,7 +141,7 @@ function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.6 }}
-        className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 text-gold/80"
+        className="absolute bottom-10 left-1/2 z-20 -translate-x-1/2 text-gold/80"
       >
         <motion.div
           animate={{ y: [0, 10, 0], opacity: [0.6, 1, 0.6] }}
