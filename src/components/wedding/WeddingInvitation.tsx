@@ -91,38 +91,45 @@ function SecretReveal() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
   const lastPosition = useRef<{ x: number; y: number } | null>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
   const { language } = useLanguage();
 
   const text = {
     EN: {
       subtitle: "THE AFTER-PARTY",
       title: "Scratch to Reveal the Secret Location",
-      location: "The Imperial Vault | Midnight"
+      location1: "The Imperial Vault",
+      location2: "MIDNIGHT"
     },
     KO: {
       subtitle: "애프터 파티",
       title: "글씨를 긁어서 비밀 장소를 확인하세요",
-      location: "황실 금고 | 자정"
+      location1: "황실 금고",
+      location2: "자정"
     },
     FR: {
       subtitle: "L'AFTER-PARTY",
       title: "Grattez pour découvrir l'emplacement secret",
-      location: "La Voûte Impériale | Minuit"
+      location1: "La Voûte Impériale",
+      location2: "MINUIT"
     },
     ES: {
       subtitle: "LA AFTER-PARTY",
       title: "Rasca para descubrir la ubicación secreta",
-      location: "La Bóveda Imperial | Medianoche"
+      location1: "La Bóveda Imperial",
+      location2: "MEDIANOCHE"
     },
     JA: {
       subtitle: "アフターパーティー",
       title: "スクラッチして秘密の場所を発見",
-      location: "インペリアル・ボールト | 深夜"
+      location1: "インペリアル・ボールト",
+      location2: "深夜"
     },
     VI: {
       subtitle: "SAU TIỆC",
       title: "Cạo để tiết lộ vị trí bí mật",
-      location: "Kho Báu Hoàng Gia | Nửa Đêm"
+      location1: "Kho Báu Hoàng Gia",
+      location2: "NỬA ĐÊM"
     }
   };
 
@@ -130,7 +137,7 @@ function SecretReveal() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
     // Set canvas size to match container
@@ -145,11 +152,31 @@ function SecretReveal() {
     // Draw the gold/amber gradient foil
     const drawFoil = (context: CanvasRenderingContext2D, width: number, height: number) => {
       const gradient = context.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, '#D4AF37');
-      gradient.addColorStop(0.5, '#FFD700');
-      gradient.addColorStop(1, '#996515');
+      gradient.addColorStop(0, '#b45309');
+      gradient.addColorStop(0.5, '#f59e0b');
+      gradient.addColorStop(1, '#fed7aa');
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
+    };
+
+    // Check reveal progress
+    const checkRevealProgress = () => {
+      const rect = canvas.getBoundingClientRect();
+      const imageData = ctx.getImageData(0, 0, rect.width * window.devicePixelRatio, rect.height * window.devicePixelRatio);
+      let transparentPixels = 0;
+      let totalPixels = 0;
+
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        const alpha = imageData.data[i + 3];
+        if (alpha < 128) {
+          transparentPixels++;
+        }
+        totalPixels++;
+      }
+
+      if (transparentPixels / totalPixels >= 0.5) {
+        setIsRevealed(true);
+      }
     };
 
     resizeCanvas();
@@ -160,7 +187,7 @@ function SecretReveal() {
       if (!lastPosition.current) return;
       
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 40;
+      ctx.lineWidth = 45;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
@@ -188,11 +215,15 @@ function SecretReveal() {
     const handleMouseUp = () => {
       isDrawing.current = false;
       lastPosition.current = null;
+      checkRevealProgress();
     };
 
     const handleMouseLeave = () => {
-      isDrawing.current = false;
-      lastPosition.current = null;
+      if (isDrawing.current) {
+        isDrawing.current = false;
+        lastPosition.current = null;
+        checkRevealProgress();
+      }
     };
 
     // Touch handlers
@@ -214,14 +245,15 @@ function SecretReveal() {
     const handleTouchEnd = () => {
       isDrawing.current = false;
       lastPosition.current = null;
+      checkRevealProgress();
     };
 
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('touchstart', handleTouchStart);
-    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
     canvas.addEventListener('touchend', handleTouchEnd);
 
     return () => {
@@ -242,7 +274,7 @@ function SecretReveal() {
       <h2 className="text-white text-3xl md:text-5xl font-serif mb-12 text-center tracking-wide">{text[language].title}</h2>
 
       <div 
-        className="relative w-72 h-72 md:w-80 md:h-80 mx-auto overflow-hidden shadow-2xl"
+        className="relative w-72 h-72 mx-auto drop-shadow-2xl"
         style={{
           WebkitMaskImage: "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>')",
           WebkitMaskSize: "contain",
@@ -254,15 +286,17 @@ function SecretReveal() {
           maskPosition: "center"
         }}
       >
-        {/* Hidden content layer */}
-        <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center p-8 text-center">
-          <p className="text-amber-500 text-lg md:text-2xl font-serif">{text[language].location}</p>
+        {/* VIP Ticket Hidden Layer */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-900/80 backdrop-blur-md border border-amber-500/40 shadow-[0_0_30px_rgba(245,158,11,0.15)] rounded-3xl scale-95">
+          <p className="text-white text-2xl font-serif mb-2">{text[language].location1}</p>
+          <p className="text-amber-500 text-xs tracking-[0.4em] uppercase">{text[language].location2}</p>
         </div>
 
         {/* Scratch-off canvas */}
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full cursor-crosshair"
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          style={{ cursor: 'url("data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><circle cx=\"16\" cy=\"16\" r=\"12\" fill=\"%23D4AF37\" opacity=\"0.8\"/><circle cx=\"16\" cy=\"16\" r=\"8\" fill=\"%23FFD700\"/></svg>") 16 16, auto' }}
         />
       </div>
     </section>
