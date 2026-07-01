@@ -160,21 +160,20 @@ function SecretReveal() {
     };
 
     // Check reveal progress
-    const checkRevealProgress = () => {
-      const rect = canvas.getBoundingClientRect();
-      const imageData = ctx.getImageData(0, 0, rect.width * window.devicePixelRatio, rect.height * window.devicePixelRatio);
+    const handleRevealCheck = () => {
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
       let transparentPixels = 0;
-      let totalPixels = 0;
 
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        const alpha = imageData.data[i + 3];
-        if (alpha < 128) {
+      for (let i = 0; i < pixels.length; i += 4) {
+        const alpha = pixels[i + 3];
+        if (alpha === 0) {
           transparentPixels++;
         }
-        totalPixels++;
       }
 
-      if (transparentPixels / totalPixels >= 0.5) {
+      const percentage = (transparentPixels / (pixels.length / 4)) * 100;
+      if (percentage >= 50) {
         setIsRevealed(true);
       }
     };
@@ -215,14 +214,14 @@ function SecretReveal() {
     const handleMouseUp = () => {
       isDrawing.current = false;
       lastPosition.current = null;
-      checkRevealProgress();
+      handleRevealCheck();
     };
 
     const handleMouseLeave = () => {
       if (isDrawing.current) {
         isDrawing.current = false;
         lastPosition.current = null;
-        checkRevealProgress();
+        handleRevealCheck();
       }
     };
 
@@ -245,7 +244,7 @@ function SecretReveal() {
     const handleTouchEnd = () => {
       isDrawing.current = false;
       lastPosition.current = null;
-      checkRevealProgress();
+      handleRevealCheck();
     };
 
     canvas.addEventListener('mousedown', handleMouseDown);
