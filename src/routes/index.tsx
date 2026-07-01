@@ -4,15 +4,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { WeddingInvitation } from "@/components/wedding/WeddingInvitation";
 import { VideoEntrance } from "@/components/wedding/VideoEntrance";
 import { LanguageProvider } from "@/lib/language-context";
-import { LanguageToggle } from "@/components/wedding/LanguageToggle";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nam-jun & Ji-yeon — 18.10.2026" },
-      { name: "description", content: "Two Eras. One Eternity. The wedding of Heo Nam-jun and Lim Ji-yeon, October 18, 2026 — Seoul." },
-      { property: "og:title", content: "Nam-jun & Ji-yeon — 18.10.2026" },
-      { property: "og:description", content: "Two Eras. One Eternity. The wedding of Heo Nam-jun and Lim Ji-yeon, October 18, 2026 — Seoul." },
+      { title: "Grand Prince Ian & Seong Hui-ju — Wedding Invitation" },
+      { name: "description", content: "Join us for the wedding of Grand Prince Ian and Seong Hui-ju at Jujak Palace, Korea on October 18, 2026." },
+      { property: "og:title", content: "Grand Prince Ian & Seong Hui-ju — Wedding Invitation" },
+      { property: "og:description", content: "Join us for the wedding of Grand Prince Ian and Seong Hui-ju at Jujak Palace, Korea on October 18, 2026." },
     ],
   }),
   component: Index,
@@ -31,7 +30,6 @@ function Index() {
       >
         <WeddingInvitation hasEntered={isOpened} />
       </motion.div>
-      <LanguageToggle />
     </LanguageProvider>
   );
 }

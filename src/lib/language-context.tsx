@@ -1,11 +1,12 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type Language = "EN" | "KO";
+type Language = "EN" | "KO" | "FR" | "ES" | "JA" | "VI";
 
 interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
+  setLanguage: (lang: Language) => void;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -18,7 +19,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage }}>
       {children}
     </LanguageContext.Provider>
   );

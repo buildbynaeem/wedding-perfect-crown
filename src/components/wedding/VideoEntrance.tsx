@@ -23,7 +23,7 @@ export function VideoEntrance({ onVideoEnd }: VideoEntranceProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[999] bg-black cursor-pointer"
+      className="fixed inset-0 z-[999] bg-slate-950 cursor-pointer"
       onClick={handleClick}
     >
       <video
