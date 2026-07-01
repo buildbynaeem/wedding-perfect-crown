@@ -293,6 +293,7 @@ function MusicToggle({ hasEntered }: { hasEntered: boolean }) {
 
 function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
+  const [isLangOpen, setIsLangOpen] = useState(false);
 
   const languages = [
     { code: "EN", name: "English" },
@@ -305,12 +306,13 @@ function LanguageSelector() {
 
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang as any);
+    setIsLangOpen(false);
   };
 
   return (
-    <div className="fixed bottom-8 left-8 z-50 group">
+    <div className="fixed bottom-8 left-8 z-50">
       {/* Drop-up menu */}
-      <div className="absolute bottom-full left-0 mb-2 w-full flex flex-col gap-1 p-2 rounded-xl backdrop-blur-md bg-slate-950/60 border border-white/20 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-[10px] group-hover:translate-y-0">
+      <div className={`absolute bottom-full left-0 mb-2 w-full flex flex-col gap-1 p-2 rounded-xl backdrop-blur-md bg-slate-950/60 border border-white/20 shadow-xl transition-all duration-300 ${isLangOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-[10px]'}`}>
         {languages.map((lang) => (
           <button
             key={lang.code}
@@ -327,7 +329,10 @@ function LanguageSelector() {
       </div>
 
       {/* Main button */}
-      <button className="w-12 h-12 md:w-14 md:h-14 rounded-full backdrop-blur-md bg-slate-950/40 border border-amber-500/40 shadow-lg cursor-pointer transition-all hover:bg-slate-950/60 hover:scale-105 flex items-center justify-center">
+      <button 
+        onClick={() => setIsLangOpen(!isLangOpen)}
+        className="w-12 h-12 md:w-14 md:h-14 rounded-full backdrop-blur-md bg-slate-950/40 border border-amber-500/40 shadow-lg cursor-pointer transition-all hover:bg-slate-950/60 hover:scale-105 flex items-center justify-center"
+      >
         <span className="text-amber-500 text-[11px] md:text-xs font-medium tracking-widest">
           {language}
         </span>
